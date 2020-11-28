@@ -7,6 +7,8 @@ import torch
 class fNet(nn.Module):
     def __init__(self):
         super(fNet, self).__init__()
+        
+        self.restored = False
 
         self.conv1 = nn.Conv2d(1, 64, 5)   # 1st conv layer INPUT [1 x 28 x 28] OUTPUT [64 x 12 x 12]
         self.conv2 = nn.Conv2d(64, 64, 5)  # 2nd conv layer INPUT [64 x 12 x 12] OUTPUT [64 x 4 x 4]
@@ -24,6 +26,8 @@ class fNet(nn.Module):
 class gNet(nn.Module):
     def __init__(self):
         super(gNet, self).__init__()
+        
+        self.restored = False
                 
         self.conv1 = nn.Conv2d(1, 64, 5)      # 1st conv layer INPUT [1 x 28 x 28]  OUTPUT [64 x 12 x 12]
         self.conv2 = nn.Conv2d(64, 64, 5)     # 2nd conv layer INPUT [64 x 12 x 12] OUTPUT [64 x 4 x 4]
@@ -71,7 +75,7 @@ class Discriminator(nn.Module):
     def __init__(self):
         super().__init__()
 
-        self.restored = True
+        self.restored = False
 
         
         self.layer = nn.Sequential(
@@ -94,14 +98,14 @@ class hSim(nn.Module):
         super().__init__()
     
 
-        self.restored = True
+        self.restored = False
         
-        self.U = torch.rand(size=(128, 512), requires_grad=True)
-        self.V = torch.rand(size=(128, 512), requires_grad=True)
+        self.U = nn.Parameter(torch.rand(size=(128, 512), requires_grad=True))
+        self.V = nn.Parameter(torch.rand(size=(128, 512), requires_grad=True))
         
     def forward(self, x_batch, mu_c):
         
-        h_batch = torch.zeros(size=[32, 10]) # batchsize = 32 maybe 'automate' this size so we don't get in trouble later when we may change the batch size (same goes for number of classes (10))
+        h_batch = torch.zeros(size=[32, 10]) # batchsize = 32 maybe 'automate' this size so we don't get in trouble later      when we may change the batch size (same goes for number of classes (10))
 
         for i in range(0, len(x_batch)):
             x = x_batch[i]
@@ -120,7 +124,7 @@ class SimNet(nn.Module):
     def __init__(self):
         super().__init__()
     
-        self.restored = True
+        self.restored = False
     
         self.fnet = fNet()
         self.gnet = gNet()
